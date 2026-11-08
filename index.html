@@ -234,6 +234,7 @@ body.in-chat .btn{display:block}
   </div>
 </div>
 <script src="lib/jszip.min.js"></script>
+<script>window.JSZip||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"><\/script>')</script>
 <script>
 const $ = id => document.getElementById(id);
 let msgs = [], media = {}, chats = [], cur = -1, pool = {}, lo = 0, hi = 0, urls = new Map();
@@ -367,10 +368,11 @@ async function readChat(file){
   const media = {};
   let text;
   if (file.name.toLowerCase().endsWith(".zip")){
+    if (typeof JSZip === "undefined") throw new Error("zip reader failed to load (lib/jszip.min.js missing or blocked)");
     const zip = await JSZip.loadAsync(file);
     const entries = Object.values(zip.files).filter(f => !f.dir);
     const txt = entries.find(f => f.name.toLowerCase().endsWith(".txt"));
-    if (!txt) return null;
+    if (!txt) throw new Error("no .txt chat file inside this zip");
     text = await txt.async("string");
     for (const f of entries) if (f !== txt) media[f.name.split("/").pop()] = f;
   } else text = await file.text();
@@ -384,14 +386,14 @@ async function readChat(file){
 async function addFiles(files){
   const all = [...files], list = [];
   for (const f of all){ if (/\.(txt|zip)$/i.test(f.name)) list.push(f); else pool[f.name] = f; }
-  let skipped = 0;
+  const bad = [];
   for (const f of list){
     $("title").textContent = "Reading " + f.name.slice(0, 30) + "…";
     await new Promise(r => setTimeout(r, 30));
-    try { const c = await readChat(f); if (c) chats.push(c); else skipped++; } catch (e) { skipped++; }
+    try { const c = await readChat(f); if (c) chats.push(c); else bad.push(f.name + " — no WhatsApp messages found (unsupported date format?)"); } catch (e) { bad.push(f.name + " — " + (e && e.message || e)); }
   }
   $("title").textContent = "Chats";
-  if (skipped) alert(skipped + " file(s) couldn’t be read as a WhatsApp export.");
+  if (bad.length) alert("Couldn’t read:\n\n" + bad.join("\n"));
   drawSide();
   if (cur >= 0) render();
 }
