@@ -1,4 +1,15 @@
-# 💬 ChatLens — Offline Viewer for Exported WhatsApp Chats
+<p align="center">
+  <img src="docs/images/icon.png" width="140" alt="ChatLens icon">
+</p>
+
+<h1 align="center"><a href="https://alokakki.github.io/WhatsLens/">ChatLens — Offline Chat Viewer</a></h1>
+
+<p align="center">
+  <a href="https://alokakki.github.io/WhatsLens/"><b>Open the app →</b></a><br>
+  <code>https://alokakki.github.io/WhatsLens/</code>
+</p>
+
+---
 
 > Open exported WhatsApp chats on your computer in a clean, WhatsApp-style viewer — with search, calendar jump, insights, heatmap, image zoom and WhatsApp-style PDF export. **100 % offline: nothing is ever uploaded.**
 
